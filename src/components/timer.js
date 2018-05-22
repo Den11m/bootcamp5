@@ -10,7 +10,8 @@ class Timer extends Component {
         step: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
         autoStart: PropTypes.bool,
         reverse: PropTypes.bool,
-        onTimeOut: PropTypes.func
+        onTimeOut: PropTypes.func,
+        onPassedTime: PropTypes.func,
 
     };
 
@@ -19,7 +20,8 @@ class Timer extends Component {
         step: 1,
         autoStart: false,
         reverse: true,
-        onTimeOut: console.log.bind(console, "Time out!")
+        onTimeOut: console.log.bind(console, "Time out!"),
+        onPassedTime: ()=>{},
     };
 
     state = {
@@ -40,9 +42,9 @@ class Timer extends Component {
     }
 
     timerTick = () => {
-        console.log(`${this.state.time} - tick`);
-        if (this.state.time <= 0 && this.props.reverse) {
-            this.props.onTimeOut(this.state.time);
+        // console.log(`${this.state.time} - tick`);
+        if (this.state.time <=0 && this.props.reverse) {
+            this.props.onTimeOut();
             this.stopHandler();
             return;
         }
@@ -87,12 +89,13 @@ class Timer extends Component {
         this.setState({
             isStarted: bool,
         })
-    }
+    };
 
     stopHandler = () => {
         clearInterval(this.timerId);
         this.timerId = null;
         this.toggleIsStarted(false);
+        this.props.onPassedTime(this.props.time, this.state.time);
     };
     resetHandler = () => {
         this.setState({
@@ -117,7 +120,7 @@ class Timer extends Component {
     render() {
         return (
             <div>
-                <h3>{this.timerValues.minutes}:{this.timerValues.seconds}</h3>
+                <h1>{this.timerValues.minutes}:{this.timerValues.seconds}</h1>
                 <RenderIf condition={this.state.isStarted}>
                     <button onClick={this.stopHandler}>Stop</button>
                 </RenderIf>
